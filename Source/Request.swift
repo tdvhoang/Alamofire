@@ -269,15 +269,17 @@ extension Request: CustomDebugStringConvertible {
     }
 
     func cURLRepresentation() -> String {
-        var components = ["$ curl -v"]
-
         guard let request = self.request,
               let url = request.url,
               let host = url.host
         else {
             return "$ curl command could not be created"
         }
+        
+        var components = ["curl -v"]
 
+        components.append("\"\(url.absoluteString)\"")
+        
         if let httpMethod = request.httpMethod, httpMethod != "GET" {
             components.append("-X \(httpMethod)")
         }
@@ -338,8 +340,6 @@ extension Request: CustomDebugStringConvertible {
 
             components.append("-d \"\(escapedBody)\"")
         }
-
-        components.append("\"\(url.absoluteString)\"")
 
         return components.joined(separator: " \\\n\t")
     }
